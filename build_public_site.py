@@ -110,10 +110,6 @@ def build_public_site():
           <i class="fa-solid fa-circle-info text-blue-400"></i>
           <span>About</span>
         </button>
-        <button id="btnAiExport" class="px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-medium flex items-center space-x-1.5 transition">
-          <i class="fa-solid fa-brain text-indigo-400"></i>
-          <span class="hidden sm:inline">Export for AI</span>
-        </button>
 
         <!-- Export Dropdown -->
         <div class="relative group">
@@ -154,10 +150,6 @@ def build_public_site():
         <!-- Time Presets -->
         <div class="flex flex-wrap items-center gap-1.5" id="timePresets">
           <button data-days="0" class="time-btn active px-3 py-1 rounded-full text-xs font-medium bg-brand-600 text-white shadow-sm">All Time</button>
-          <button data-days="90" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">Past 3 Mos</button>
-          <button data-days="180" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">Past 6 Mos</button>
-          <button data-days="300" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">Past 10 Mos</button>
-          <button data-days="365" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">Past 1 Year</button>
           <button data-year="2026" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">2026</button>
           <button data-year="2024" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">2024</button>
           <button data-year="2023" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">2023</button>
@@ -594,34 +586,6 @@ def build_public_site():
     </div>
   </div>
 
-  <!-- AI Export Modal -->
-  <div id="aiModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-brain text-indigo-400 text-lg"></i>
-          <h3 class="font-bold text-white text-base">Export Dataset for AI Analysis</h3>
-        </div>
-        <button id="btnCloseAiModal" class="text-slate-400 hover:text-white">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <p class="text-xs text-slate-300">
-        This structured prompt summarizes your practice profile (strengths, topic balance, and representative problems). Paste this into ChatGPT, Claude, or Gemini to receive customized coaching and training roadmaps.
-      </p>
-
-      <textarea id="aiPromptTextarea" rows="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs mono text-slate-200 focus:outline-none focus:border-indigo-500" readonly></textarea>
-
-      <div class="flex items-center justify-end space-x-3 pt-2">
-        <button id="btnCopyAiPrompt" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs flex items-center space-x-2 transition shadow-lg shadow-indigo-600/30">
-          <i class="fa-solid fa-copy"></i>
-          <span id="copyBtnText">Copy Prompt to Clipboard</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 border border-slate-700 text-white px-4 py-2.5 rounded-xl shadow-2xl text-xs font-medium flex items-center space-x-2 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
     <i class="fa-solid fa-circle-check text-brand-400 text-sm"></i>
@@ -821,13 +785,6 @@ def build_public_site():
         expandedContestIds.clear();
         renderContestsTable();
       }});
-
-      // AI Modal
-      document.getElementById('btnAiExport').addEventListener('click', openAiModal);
-      document.getElementById('btnCloseAiModal').addEventListener('click', () => {{
-        document.getElementById('aiModal').classList.add('hidden');
-      }});
-      document.getElementById('btnCopyAiPrompt').addEventListener('click', copyAiPrompt);
 
       // About Modal
       const openAbout = () => document.getElementById('aboutModal').classList.remove('hidden');
@@ -1522,52 +1479,6 @@ def build_public_site():
 
       container.appendChild(createBtn('<i class="fa-solid fa-angle-right"></i>', probPage + 1, probPage === totalPages, false));
       container.appendChild(createBtn('<i class="fa-solid fa-angles-right"></i>', totalPages, probPage === totalPages, false));
-    }}
-
-    function openAiModal() {{
-      const modal = document.getElementById('aiModal');
-      const textarea = document.getElementById('aiPromptTextarea');
-
-      const catCounts = {{}};
-      filteredProblems.forEach(p => {{
-        catCounts[p.primary_category] = (catCounts[p.primary_category] || 0) + 1;
-      }});
-
-      const totalP = filteredProblems.length;
-      const avgR = totalP ? Math.round(filteredProblems.reduce((sum, p) => sum + (p.cf_rating || 0), 0) / totalP) : 0;
-      const sDate = document.getElementById('dateStart').value;
-      const eDate = document.getElementById('dateEnd').value;
-
-      const sampleProbs = filteredProblems.slice(0, 40).map(p => 
-        `- [${{p.primary_category}}] "${{p.problem_title}}" (${{p.oj}} ${{p.oj_prob_code}}, CF Rating: ${{p.cf_rating}}, Contest: "${{p.contest_title}}", Date: ${{p.contest_date}})`
-      ).join('\\n');
-
-      const prompt = `I am analyzing my competitive programming training profile from VJudge contests.\\n\\n` +
-        `Practice Session Overview (Window: ${{sDate}} to ${{eDate}}):\\n` +
-        `- Total Problems in Scope: ${{totalP}}\\n` +
-        `- Total Contests: ${{new Set(filteredProblems.map(p => p.contest_id)).size}}\\n` +
-        `- Average Codeforces Difficulty Rating: ${{avgR}}\\n\\n` +
-        `Topic Distribution:\\n` +
-        Object.entries(catCounts).map(([cat, cnt]) => `  * ${{cat}}: ${{cnt}} problems (${{((cnt/totalP)*100).toFixed(1)}}%)`).join('\\n') +
-        `\\n\\nRepresentative Problems Sample (first 40 shown):\\n` +
-        sampleProbs +
-        `\\n\\nBased on this data, please provide:\\n` +
-        `1. An objective diagnostic of training breadth, strengths, and blind spots.\\n` +
-        `2. High-yield topic recommendations to raise the competitive rating floor.\\n` +
-        `3. A targeted 4-week practice schedule balancing speed problems (<1400) and stretch problems (1600-2100).`;
-
-      textarea.value = prompt;
-      modal.classList.remove('hidden');
-    }}
-
-    function copyAiPrompt() {{
-      const text = document.getElementById('aiPromptTextarea').value;
-      copyToClipboard(text, 'AI prompt copied to clipboard!');
-      const btnText = document.getElementById('copyBtnText');
-      btnText.textContent = 'Copied to Clipboard!';
-      setTimeout(() => {{
-        btnText.textContent = 'Copy Prompt to Clipboard';
-      }}, 2000);
     }}
 
     function exportFilteredProblemsCsv() {{
