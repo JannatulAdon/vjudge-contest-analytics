@@ -106,6 +106,10 @@ def build_public_site():
       </div>
       
       <div class="flex items-center space-x-2 sm:space-x-3">
+        <button id="btnAbout" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium flex items-center space-x-1.5 transition">
+          <i class="fa-solid fa-circle-info text-blue-400"></i>
+          <span>About</span>
+        </button>
         <button id="btnAiExport" class="px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-medium flex items-center space-x-1.5 transition">
           <i class="fa-solid fa-brain text-indigo-400"></i>
           <span class="hidden sm:inline">Export for AI</span>
@@ -512,6 +516,84 @@ def build_public_site():
     </div>
   </main>
 
+  <!-- Page Footer -->
+  <footer class="border-t border-slate-800/80 py-6 mt-12 bg-slate-900/40 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>VJudge Contest & Problem Analytics Hub • 105 Contests • 1,317 Problems</p>
+      <div class="flex items-center space-x-4">
+        <a href="#about" id="footerAboutLink" class="text-indigo-400 hover:text-indigo-300 transition flex items-center space-x-1">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>About & Methodology</span>
+        </a>
+        <a href="https://github.com/JannatulAdon/vjudge-contest-analytics" target="_blank" class="hover:text-slate-300 transition flex items-center space-x-1">
+          <i class="fa-brands fa-github"></i>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- About & Methodology Modal -->
+  <div id="aboutModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
+            <i class="fa-solid fa-circle-info text-sm"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base">About & Methodology</h3>
+            <p class="text-[11px] text-slate-400">Dataset Context & Calibration</p>
+          </div>
+        </div>
+        <button id="btnCloseAboutModal" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80 space-y-1">
+          <div class="font-semibold text-white flex items-center space-x-1.5">
+            <i class="fa-solid fa-database text-brand-400"></i>
+            <span>What is this?</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">
+            A comprehensive practice archive of <strong>105 contests</strong> and <strong>1,317 problems</strong> hosted on Virtual Judge (2022–2026), covering Team Forming, Team Practice, and Weekly contests.
+          </p>
+        </div>
+
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80 space-y-1">
+          <div class="font-semibold text-white flex items-center space-x-1.5">
+            <i class="fa-solid fa-scale-balanced text-amber-400"></i>
+            <span>How are Codeforces ratings determined?</span>
+          </div>
+          <ul class="text-slate-400 text-[11px] space-y-1 list-disc list-inside">
+            <li><strong>Codeforces:</strong> Official contest problem ratings (800 – 3500+).</li>
+            <li><strong>AtCoder:</strong> Converted from Kenkoooo difficulty models onto the CF scale.</li>
+            <li><strong>Gym, CSES & Others:</strong> Calibrated by contest division tier and letter index (Div.2 A/B ≈ 800–1200, C/D ≈ 1300–1700, E/F ≈ 1800–2400).</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80 space-y-1">
+          <div class="font-semibold text-white flex items-center space-x-1.5">
+            <i class="fa-solid fa-tags text-indigo-400"></i>
+            <span>Topic Classification</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">
+            Tagged hierarchically by algorithmic technique: <em>Dynamic Programming &gt; Trees &gt; Graphs &gt; Math &amp; Number Theory &gt; Geometry &gt; Data Structures &gt; Greedy &gt; Implementation</em>.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+        <span class="text-slate-500 text-[11px]">Direct links open contests & problems on VJudge</span>
+        <button id="btnDismissAboutModal" class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition">
+          Got it
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- AI Export Modal -->
   <div id="aiModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4">
@@ -746,6 +828,30 @@ def build_public_site():
         document.getElementById('aiModal').classList.add('hidden');
       }});
       document.getElementById('btnCopyAiPrompt').addEventListener('click', copyAiPrompt);
+
+      // About Modal
+      const openAbout = () => document.getElementById('aboutModal').classList.remove('hidden');
+      const closeAbout = () => {{
+        document.getElementById('aboutModal').classList.add('hidden');
+        if (window.location.hash === '#about') {{
+          history.replaceState(null, null, ' ');
+        }}
+      }};
+      document.getElementById('btnAbout').addEventListener('click', openAbout);
+      document.getElementById('footerAboutLink').addEventListener('click', (e) => {{
+        e.preventDefault();
+        openAbout();
+      }});
+      document.getElementById('btnCloseAboutModal').addEventListener('click', closeAbout);
+      document.getElementById('btnDismissAboutModal').addEventListener('click', closeAbout);
+      
+      // Auto open if #about in URL or on hashchange
+      if (window.location.hash === '#about') {{
+        openAbout();
+      }}
+      window.addEventListener('hashchange', () => {{
+        if (window.location.hash === '#about') openAbout();
+      }});
 
       // Exports
       document.getElementById('btnExportProblemsCsv').addEventListener('click', exportFilteredProblemsCsv);
