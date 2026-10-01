@@ -1,0 +1,23 @@
+# Private raw data and credentials
+contest_passwords.txt
+chat.txt
+last_5.json
+dashboard.html
+problems_database.json
+problems_database.csv
+contests_database.csv
+problems_database.sqlite
+all_contest_problems.*
+
+# Local build and scraping scripts with credentials/tokens
+extract_problems.py
+merge_contests.py
+build_dashboard.py
+build_database.py
+
+# Caches & Python artifacts
+*cache.json
+__pycache__/
+*.pyc
+.system_generated/
+scratch/
