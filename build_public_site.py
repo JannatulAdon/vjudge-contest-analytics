@@ -153,6 +153,7 @@ def build_public_site():
           <button data-year="2026" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">2026</button>
           <button data-year="2024" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">2024</button>
           <button data-year="2023" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">2023</button>
+          <button data-year="2022" class="time-btn px-3 py-1 rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">2022</button>
         </div>
       </div>
 
@@ -488,7 +489,7 @@ def build_public_site():
                     <i class="fa-solid fa-sort text-slate-500" id="sort_icon_cf_rating"></i>
                   </div>
                 </th>
-                <th class="py-3 px-2 text-center">Solve</th>
+                <th class="py-3 px-2 text-center w-24" title="Problem links: VJudge (Public), Official Judge, Contest">Links</th>
               </tr>
             </thead>
             <tbody id="problemsTableBody" class="divide-y divide-slate-800/60 font-normal">
@@ -864,6 +865,8 @@ def build_public_site():
             p.contest_title + ' ' + 
             p.oj + ' ' + 
             p.oj_prob_code + ' ' + 
+            (p.oj + '-' + p.oj_prob_code) + ' ' +
+            (p.oj + p.oj_prob_code) + ' ' +
             p.tags.join(' ')
           ).toLowerCase();
           if (!haystack.includes(query)) return false;
@@ -1237,18 +1240,20 @@ def build_public_site():
               else if (p.rating >= 1200) pBadge = 'bg-amber-900/40 text-amber-300 border border-amber-700/50';
               else pBadge = 'bg-emerald-900/40 text-emerald-300 border border-emerald-700/50';
 
+              const publicVjudgeUrl = p.vjudge_url || `https://vjudge.net/problem/${{p.oj}}-${{p.code}}`;
+              const originUrl = p.origin_url;
               const contestProbUrl = p.contest_url || `${{c.link}}#problem/${{p.letter}}`;
 
               probRowsHtml += `
                 <tr class="hover:bg-slate-800/50 transition border-b border-slate-800/40">
                   <td class="py-2 px-3 font-bold text-white mono text-center">${{p.letter}}</td>
                   <td class="py-2 px-3 text-slate-200 font-medium">
-                    <a href="${{contestProbUrl}}" target="_blank" onclick="event.stopPropagation()" class="hover:text-indigo-400 transition">
+                    <a href="${{publicVjudgeUrl}}" target="_blank" onclick="event.stopPropagation()" class="hover:text-brand-400 font-semibold text-slate-100 transition" title="Open Public Problem on VJudge (No password needed)">
                       ${{p.title}}
                     </a>
                   </td>
                   <td class="py-2 px-3 mono text-slate-400 text-xs">
-                    <a href="${{p.vjudge_url}}" target="_blank" onclick="event.stopPropagation()" class="hover:text-brand-400 transition" title="Open source problem on VJudge">
+                    <a href="${{originUrl || publicVjudgeUrl}}" target="_blank" onclick="event.stopPropagation()" class="hover:text-indigo-400 transition" title="Open on ${{p.oj}}">
                       ${{p.oj}} ${{p.code}}
                     </a>
                   </td>
@@ -1263,9 +1268,18 @@ def build_public_site():
                     </span>
                   </td>
                   <td class="py-2 px-3 text-center">
-                    <a href="${{contestProbUrl}}" target="_blank" onclick="event.stopPropagation()" class="p-1 rounded text-indigo-400 hover:bg-slate-800 transition" title="Solve problem">
-                      <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-                    </a>
+                    <div class="inline-flex items-center space-x-1.5">
+                      <a href="${{publicVjudgeUrl}}" target="_blank" onclick="event.stopPropagation()" class="p-1 rounded hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 transition text-xs" title="Solve on VJudge (Public, No Password)">
+                        <i class="fa-solid fa-code"></i>
+                      </a>
+                      ${{originUrl ? `
+                      <a href="${{originUrl}}" target="_blank" onclick="event.stopPropagation()" class="p-1 rounded hover:bg-slate-800 text-indigo-400 hover:text-indigo-300 transition text-xs" title="Open on Original Judge (${{p.oj}})">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>` : ''}}
+                      <a href="${{contestProbUrl}}" target="_blank" onclick="event.stopPropagation()" class="p-1 rounded hover:bg-slate-800 text-slate-500 hover:text-slate-300 transition text-xs" title="Contest View (May require password)">
+                        <i class="fa-solid fa-lock text-[10px]"></i>
+                      </a>
+                    </div>
                   </td>
                 </tr>
               `;
@@ -1296,7 +1310,7 @@ def build_public_site():
                           <th class="py-2 px-3">Source OJ</th>
                           <th class="py-2 px-3">Topic</th>
                           <th class="py-2 px-3 text-center">CF Rating</th>
-                          <th class="py-2 px-3 text-center w-12">Solve</th>
+                          <th class="py-2 px-3 text-center w-24">Links</th>
                         </tr>
                       </thead>
                       <tbody class="divide-y divide-slate-800/60 font-normal">
@@ -1391,6 +1405,10 @@ def build_public_site():
           else if (p.cf_rating >= 1200) badgeColor = 'bg-amber-900/40 text-amber-300 border border-amber-700/50';
           else badgeColor = 'bg-emerald-900/40 text-emerald-300 border border-emerald-700/50';
 
+          const publicVjudgeUrl = p.vjudge_url || `https://vjudge.net/problem/${{p.oj}}-${{p.oj_prob_code}}`;
+          const originUrl = p.origin_url;
+          const contestProbUrl = p.contest_url || `${{p.contest_link}}#problem/${{p.problem_letter}}`;
+
           tr.innerHTML = `
             <td class="py-2.5 px-3 text-slate-400 mono whitespace-nowrap">${{p.contest_date || 'N/A'}}</td>
             <td class="py-2.5 px-3 max-w-[200px] truncate">
@@ -1405,12 +1423,12 @@ def build_public_site():
             </td>
             <td class="py-2.5 px-2 text-center font-bold text-white mono">${{p.problem_letter}}</td>
             <td class="py-2.5 px-3 font-medium text-slate-100 max-w-[220px] truncate" title="${{p.problem_title}}">
-              <a href="${{p.contest_url || p.vjudge_url}}" target="_blank" class="hover:text-brand-400 transition">
+              <a href="${{publicVjudgeUrl}}" target="_blank" class="hover:text-brand-400 font-semibold text-slate-100 transition" title="Open Public Problem on VJudge (No password needed)">
                 ${{p.problem_title}}
               </a>
             </td>
             <td class="py-2.5 px-2 mono text-slate-400 whitespace-nowrap">
-              <a href="${{p.vjudge_url}}" target="_blank" class="hover:text-indigo-400 transition" title="Open source problem on VJudge">
+              <a href="${{originUrl || publicVjudgeUrl}}" target="_blank" class="hover:text-indigo-400 transition" title="Open on ${{p.oj}}">
                 ${{p.oj}} ${{p.oj_prob_code}}
               </a>
             </td>
@@ -1425,9 +1443,18 @@ def build_public_site():
               </span>
             </td>
             <td class="py-2.5 px-2 text-center whitespace-nowrap">
-              <a href="${{p.contest_url || p.vjudge_url}}" target="_blank" class="p-1 rounded hover:bg-slate-700 text-brand-400 text-xs" title="Solve in Contest">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
+              <div class="inline-flex items-center space-x-1.5">
+                <a href="${{publicVjudgeUrl}}" target="_blank" class="p-1 rounded hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 text-xs transition" title="Solve on VJudge (Public, No Password)">
+                  <i class="fa-solid fa-code"></i>
+                </a>
+                ${{originUrl ? `
+                <a href="${{originUrl}}" target="_blank" class="p-1 rounded hover:bg-slate-700 text-indigo-400 hover:text-indigo-300 text-xs transition" title="Open on Original Judge (${{p.oj}})">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>` : ''}}
+                <a href="${{contestProbUrl}}" target="_blank" class="p-1 rounded hover:bg-slate-700 text-slate-500 hover:text-slate-300 text-xs transition" title="Contest View (May require password)">
+                  <i class="fa-solid fa-lock text-[10px]"></i>
+                </a>
+              </div>
             </td>
           `;
           tbody.appendChild(tr);
@@ -1482,7 +1509,7 @@ def build_public_site():
     }}
 
     function exportFilteredProblemsCsv() {{
-      const headers = ['id', 'contest_id', 'contest_index', 'contest_title', 'contest_type', 'contest_date', 'contest_link', 'problem_letter', 'problem_title', 'oj', 'oj_prob_code', 'cf_rating', 'difficulty_level', 'primary_category', 'contest_url', 'vjudge_url'];
+      const headers = ['id', 'contest_id', 'contest_index', 'contest_title', 'contest_type', 'contest_date', 'contest_link', 'problem_letter', 'problem_title', 'oj', 'oj_prob_code', 'cf_rating', 'difficulty_level', 'primary_category', 'vjudge_url', 'origin_url', 'contest_url'];
       const rows = [headers.join(',')];
       filteredProblems.forEach(p => {{
         const row = [
@@ -1500,8 +1527,9 @@ def build_public_site():
           p.cf_rating,
           p.difficulty_level,
           `"${{p.primary_category}}"`,
-          p.contest_url,
-          p.vjudge_url
+          p.vjudge_url || '',
+          p.origin_url || '',
+          p.contest_url || ''
         ];
         rows.push(row.join(','));
       }});
@@ -1560,8 +1588,35 @@ def build_public_site():
 
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
-
     print(f"Successfully generated public sanitized index.html ({len(html_content):,} bytes)")
+
+    import csv
+    with open('contests_public.csv', 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['contest_index', 'contest_id', 'title', 'contest_type', 'date', 'link', 'problem_count', 'avg_cf_rating', 'min_cf_rating', 'max_cf_rating', 'difficulty_level', 'category_summary'])
+        for c in public_data['contests']:
+            writer.writerow([
+                c['contest_index'], c['contest_id'], c['title'], c['contest_type'], c['date'],
+                c['link'], c['problem_count'], c['avg_cf_rating'], c['min_cf_rating'],
+                c['max_cf_rating'], c['difficulty_level'], c['category_summary']
+            ])
+    print("Saved contests_public.csv")
+
+    with open('problems_public.csv', 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['id', 'contest_id', 'contest_index', 'contest_title', 'contest_type', 'contest_date', 'problem_letter', 'problem_title', 'oj', 'oj_prob_code', 'cf_rating', 'difficulty_level', 'primary_category', 'tags', 'vjudge_url', 'origin_url', 'contest_url'])
+        for p in public_data['problems']:
+            writer.writerow([
+                p['id'], p['contest_id'], p['contest_index'], p['contest_title'], p['contest_type'],
+                p['contest_date'], p['problem_letter'], p['problem_title'], p['oj'], p['oj_prob_code'],
+                p['cf_rating'], p['difficulty_level'], p['primary_category'], ', '.join(p['tags']),
+                p['vjudge_url'], p.get('origin_url', ''), p['contest_url']
+            ])
+    print("Saved problems_public.csv")
+
+    with open('dataset_public.json', 'w', encoding='utf-8') as f:
+        json.dump(public_data, f, indent=2, ensure_ascii=False)
+    print("Saved dataset_public.json")
 
 if __name__ == '__main__':
     build_public_site()
