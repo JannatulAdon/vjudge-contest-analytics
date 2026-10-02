@@ -112,13 +112,13 @@ def build_public_site():
         </button>
 
         <!-- Export Dropdown -->
-        <div class="relative group">
-          <button class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center space-x-1.5 transition border border-slate-700">
+        <div class="relative" id="exportDropdownContainer">
+          <button id="btnExportDropdownToggle" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center space-x-1.5 transition border border-slate-700">
             <i class="fa-solid fa-download text-emerald-400"></i>
             <span>Export</span>
             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
           </button>
-          <div class="absolute right-0 mt-1 w-48 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1 hidden group-hover:block z-50">
+          <div id="exportDropdownMenu" class="absolute right-0 mt-1 w-48 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1 hidden z-50">
             <button id="btnExportContestsCsv" class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-800 hover:text-white flex items-center space-x-2">
               <i class="fa-solid fa-file-csv text-indigo-400"></i>
               <span>Contests (CSV)</span>
@@ -802,6 +802,18 @@ def build_public_site():
       }});
       document.getElementById('btnCloseAboutModal').addEventListener('click', closeAbout);
       document.getElementById('btnDismissAboutModal').addEventListener('click', closeAbout);
+
+      // Close on backdrop click
+      document.getElementById('aboutModal').addEventListener('click', (e) => {{
+        if (e.target.id === 'aboutModal') closeAbout();
+      }});
+
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {{
+        if (e.key === 'Escape' && !document.getElementById('aboutModal').classList.contains('hidden')) {{
+          closeAbout();
+        }}
+      }});
       
       // Auto open if #about in URL or on hashchange
       if (window.location.hash === '#about') {{
@@ -810,6 +822,19 @@ def build_public_site():
       window.addEventListener('hashchange', () => {{
         if (window.location.hash === '#about') openAbout();
       }});
+
+      // Export Dropdown Click / Touch Toggle
+      const expBtn = document.getElementById('btnExportDropdownToggle');
+      const expMenu = document.getElementById('exportDropdownMenu');
+      if (expBtn && expMenu) {{
+        expBtn.addEventListener('click', (e) => {{
+          e.stopPropagation();
+          expMenu.classList.toggle('hidden');
+        }});
+        document.addEventListener('click', () => {{
+          expMenu.classList.add('hidden');
+        }});
+      }}
 
       // Exports
       document.getElementById('btnExportProblemsCsv').addEventListener('click', exportFilteredProblemsCsv);
@@ -863,6 +888,7 @@ def build_public_site():
           const haystack = (
             p.problem_title + ' ' + 
             p.contest_title + ' ' + 
+            String(p.contest_id || '') + ' ' +
             p.oj + ' ' + 
             p.oj_prob_code + ' ' + 
             (p.oj + '-' + p.oj_prob_code) + ' ' +
@@ -884,7 +910,7 @@ def build_public_site():
         
         if (category !== 'ALL' || difficulty !== 'ALL' || query !== '') {{
           if (!matchingContestIds.has(c.contest_id)) {{
-            if (query && c.title.toLowerCase().includes(query)) {{
+            if (query && (c.title.toLowerCase().includes(query) || String(c.contest_id).includes(query))) {{
               return true;
             }}
             return false;
