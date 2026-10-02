@@ -561,9 +561,11 @@ def build_public_site():
             <span>How are Codeforces ratings determined?</span>
           </div>
           <ul class="text-slate-400 text-[11px] space-y-1 list-disc list-inside">
-            <li><strong>Codeforces:</strong> Official contest problem ratings (800 – 3500+).</li>
-            <li><strong>AtCoder:</strong> Converted from Kenkoooo difficulty models onto the CF scale.</li>
-            <li><strong>Gym, CSES & Others:</strong> Calibrated by contest division tier and letter index (Div.2 A/B ≈ 800–1200, C/D ≈ 1300–1700, E/F ≈ 1800–2400).</li>
+            <li><strong>Codeforces & Olympiads:</strong> Official contest problem ratings (800 – 3500+) and curated Olympiad mirrors (e.g. CEOI 1192B = 2400).</li>
+            <li><strong>CF Gym (Global Solves):</strong> Difficulty derived from actual global user solves across all 88 Gym contests using a continuous logarithmic decay model.</li>
+            <li><strong>AtCoder & CodeChef:</strong> Official Kenkoooo models (800 CF floor) and calibrated non-linear piecewise CodeChef conversion.</li>
+            <li><strong>CSES & LightOJ:</strong> Curated community benchmarks and Bangladeshi competitive programming standards (e.g. Unlucky Bird = 850).</li>
+            <li><strong>UVA & Others:</strong> Global uHunt accepted solver counts and regional event tier models.</li>
           </ul>
         </div>
 
