@@ -1464,7 +1464,7 @@ def build_public_site():
               </span>
             </td>
             <td class="py-2.5 px-3 text-center whitespace-nowrap">
-              <span class="px-2 py-0.5 rounded text-[11px] font-semibold mono ${{badgeColor}}">
+              <span class="px-2 py-0.5 rounded text-[11px] font-semibold mono ${{badgeColor}}" title="Rating: ${{p.cf_rating}} (${{p.rating_origin || 'estimated'}})">
                 ${{p.cf_rating}}
               </span>
             </td>
@@ -1535,7 +1535,7 @@ def build_public_site():
     }}
 
     function exportFilteredProblemsCsv() {{
-      const headers = ['id', 'contest_id', 'contest_index', 'contest_title', 'contest_type', 'contest_date', 'contest_link', 'problem_letter', 'problem_title', 'oj', 'oj_prob_code', 'cf_rating', 'difficulty_level', 'primary_category', 'vjudge_url', 'origin_url', 'contest_url'];
+      const headers = ['id', 'contest_id', 'contest_index', 'contest_title', 'contest_type', 'contest_date', 'contest_link', 'problem_letter', 'problem_title', 'oj', 'oj_prob_code', 'cf_rating', 'difficulty_level', 'rating_origin', 'primary_category', 'vjudge_url', 'origin_url', 'contest_url'];
       const rows = [headers.join(',')];
       filteredProblems.forEach(p => {{
         const row = [
@@ -1552,6 +1552,7 @@ def build_public_site():
           `"${{p.oj_prob_code}}"`,
           p.cf_rating,
           p.difficulty_level,
+          `"${{p.rating_origin || ''}}"`,
           `"${{p.primary_category}}"`,
           p.vjudge_url || '',
           p.origin_url || '',
@@ -1630,12 +1631,12 @@ def build_public_site():
 
     with open('problems_public.csv', 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(['id', 'contest_id', 'contest_index', 'contest_title', 'contest_type', 'contest_date', 'problem_letter', 'problem_title', 'oj', 'oj_prob_code', 'cf_rating', 'difficulty_level', 'primary_category', 'tags', 'vjudge_url', 'origin_url', 'contest_url'])
+        writer.writerow(['id', 'contest_id', 'contest_index', 'contest_title', 'contest_type', 'contest_date', 'problem_letter', 'problem_title', 'oj', 'oj_prob_code', 'cf_rating', 'difficulty_level', 'rating_origin', 'primary_category', 'tags', 'vjudge_url', 'origin_url', 'contest_url'])
         for p in public_data['problems']:
             writer.writerow([
                 p['id'], p['contest_id'], p['contest_index'], p['contest_title'], p['contest_type'],
                 p['contest_date'], p['problem_letter'], p['problem_title'], p['oj'], p['oj_prob_code'],
-                p['cf_rating'], p['difficulty_level'], p['primary_category'], ', '.join(p['tags']),
+                p['cf_rating'], p['difficulty_level'], p.get('rating_origin', ''), p['primary_category'], ', '.join(p['tags']),
                 p['vjudge_url'], p.get('origin_url', ''), p['contest_url']
             ])
     print("Saved problems_public.csv")
